@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load crispy_forms_tags %}
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
 
 {% block menu %}
@@ -38,6 +39,7 @@
 			<input type="hidden" id="id_vinho_id" name="vinho_id">
 			{{ form|crispy }}
 			
+			
 			<button type="submit" class="btn btn-primary">Cadastrar</button>
 		</form>
 	</div>
@@ -50,22 +52,16 @@
 
 			</form>
 		</div>
-		<table class="table">
-			<thead class="thead-dark">
+		<table class="table" >
+			<thead class="thead-dark" >
 				<tr>
 					<th scope="col">ID</th>
 					<th><a href="?search={{ request.GET.search }}&order_by=nome&direction={% if request.GET.direction == 'asc' %}desc{% else %}asc{% endif %}">Nome</a></th>
 					<th scope="col">Teor Alcólico</th>
 					<th scope="col">Temperatura</th>
                     <th scope="col">Data</th>
-                    <th scope="col">Local</th>
-                    <th scope="col">Safra</th>
-                    <th scope="col">Produtor</th>
-                    <th scope="col">País/Região</th>
-                    <th scope="col">Degustador</th>
-                    <th scope="col">Rótulo</th>
-                    <th scope="col">Uva</th>
-				</tr>
+					<th scope="col">QR Code</th>
+					<th scope="col">Ação</th>			
 			</thead>
 			<tbody>
 				{% for vinho in db %}
@@ -75,13 +71,8 @@
 					<td>{{ vinho.teorAlc}}</td>
 					<td>{{ vinho.tempAmbServ}}</td>
                     <td>{{ vinho.data}}</td>
-                    <td>{{ vinho.local}}</td>
-                    <td>{{ vinho.safra}}</td>
-                    <td>{{ vinho.produtor}}</td>
-                    <td>{{ vinho.paisRegiao}}</td>
-                    <td>{{ vinho.degustador}}</td>
-                    <td>{{ vinho.rotulo}}</td>
-                    <td>{{ vinho.uva_id}}</td>
+                   
+					<td><a class="btn btn-primary"  href="{% url 'gerar_qr_codeVinho' vinho.id %}"><i class="fas fa-qrcode"></i> QRCode</a></td>
 					<td>
 						<a class="btn btn-danger" href="{% url 'core_vinho_delete_confirm' vinho.id%}"
 						onClick="return confirm('Tem certeza que deseja excluir este vinho?') ">Deletar</a>

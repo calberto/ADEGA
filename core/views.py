@@ -7,6 +7,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 import imghdr
 from django.http import HttpResponse
+import qrcode
+import base64
+from io import BytesIO
 from django.core.paginator import Paginator
 
 
@@ -16,35 +19,6 @@ def home(request):
     return render(request, 'core/index.html', context)
 
 def lista_cores(request):
-    """ data = {}
-    
-     
-    search = request.GET.get('search', '').strip()  # Verifica se existe o termo de busca
-    orderby = request.GET.get('orderby', 'nome')  # Campo para ordenação, 'nome' por padrão
-    direction = request.GET.get('direction', 'asc')  # Direção de ordenação, 'asc' por padrão
-
-    if search:
-        resultados = Cor.objects.filter(nome__icontains=search)
-    else:
-        resultados = Cor.objects.all()
-
-    if direction == 'desc':
-        resultados = resultados.order_by(f'-{orderby}')
-    else:
-        resultados = resultados.order_by(orderby)
-
-    paginator = Paginator(resultados, 3)  # Paginação de 5 itens por página
-    page_number = request.GET.get('page', 1)
-    page_obj = paginator.get_page(page_number)
-
-    cores = paginator.get_page(page_obj)
-
-    data['page_obj'] = page_obj
-    data['cores'] = cores
-    data['search'] = search
-    data['ordery'] = orderby
-    data['direction'] = direction
-    """
     
     data = {}
     
@@ -99,6 +73,23 @@ def salvar_cor(request):
 
     return render(request, 'cor_form.html', {'form': form})
 
+def gerar_qr_code(request, cor_id):
+    cor = get_object_or_404(Cor, id=cor_id)
+    
+    # Dados que serão incorporados no QR Code
+    dados_qr = f'Nome: {cor.nome}\nDescrição: {cor.descricao}\nCategoria: {cor.categoria}'
+
+    # Gera o QR Code
+    qr = qrcode.make(dados_qr)
+    buffer = BytesIO()
+    qr.save(buffer, format="PNG")
+    
+    # Codifica a imagem como base64
+    qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    
+    # Renderiza a template com a imagem em base64
+    return render(request, 'core/exibir_qrcode_cor.html', {'qr_code_base64': qr_code_base64})
+
 #  Uvas
 def listar_uvas(request):
     data = {}
@@ -150,6 +141,24 @@ def uva_delete_confirm(request, uva_pk):
     uva = Uva.objects.get(pk=uva_pk)
     uva.delete()
     return redirect('core_listar_uvas')	
+
+def gerar_qr_codeUva(request, uva_id):
+    uva = get_object_or_404(Uva, id=uva_id)
+    
+    # Dados que serão incorporados no QR Code
+    dados_qr = f'Nome: {uva.nome}\nDescrição: {uva.descricao}\nImagem: {uva.imagem}'
+
+     # Gera o QR Code
+    qr = qrcode.make(dados_qr)
+    buffer = BytesIO()
+    qr.save(buffer, format="PNG")
+    
+    # Codifica a imagem como base64
+    qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    
+    # Renderiza a template com a imagem em base64
+    return render(request, 'core/exibir_qrcode_uva.html', {'qr_code_base64': qr_code_base64})
+
 
 # Vinhos
 def listar_vinhos(request):
@@ -212,4 +221,19 @@ def vinho_delete_confirm(request, vinho_pk):
     Vinho.delete()
     return redirect('core_listar_vinhos')	
 
+def gerar_qr_codeVinho(request, vinho_id):
+    vinho = get_object_or_404(Vinho, id=vinho_id)
+    
+    # Dados que serão incorporados no QR Code
+    dados_qr = f'Nome: {vinho.nome}\nTeor: {vinho.teorAlc}\nSafra: {vinho.safra}\nProdutor: {vinho.produtor}\nPaís: {vinho.paisRegiao}\nDegustador: {vinho.degustador}\nUva: {vinho.uva_id}'
 
+     # Gera o QR Code
+    qr = qrcode.make(dados_qr)
+    buffer = BytesIO()
+    qr.save(buffer, format="PNG")
+    
+    # Codifica a imagem como base64
+    qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    
+    # Renderiza a template com a imagem em base64
+    return render(request, 'core/exibir_qrcode_vinho.html', {'qr_code_base64': qr_code_base64})

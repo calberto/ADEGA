@@ -37,14 +37,22 @@
 
 			<input type="hidden" id="id_cor_id" name="cor_id">
 			{{ form|crispy }}
-			<p>	
-			
+			<p>
+
 				<!-- Tag de imagem para pré-visualização -->
 
-				<img id="id_imagem_preview" src="{% if form.instance.imagem %}{{ form.instance.imagem.url }}{% else %}# {% endif %}" 
-				alt="Imagem da Cor" width="100">
-					
-			</p>	
+				<img id="id_imagem_preview"
+					src="{% if form.instance.imagem %}{{ form.instance.imagem.url }}{% else %}# {% endif %}"
+					alt="Imagem da Cor" width="100">
+
+			</p>
+			<p>
+				{% if cor.id %}
+					<a href="{% url 'core_gerar_qr_code' cor.id %}">Gerar QR Code</a>
+				{% else %}
+					<span>QR Code não disponível</span>
+				{% endif %}
+			</p>
 			<button type="submit" class="btn btn-primary">Cadastrar</button>
 		</form>
 	</div>
@@ -53,7 +61,8 @@
 		<h1>Lista Cores</h1>
 		<div class="col-8  m-auto pt-3 pb-2 text-center">
 			<form method="get">
-				<input type="text" name="search" placeholder="Buscar por nome, descrição ou categoria..." value="{{ request.GET.search }}">
+				<input type="text" name="search" placeholder="Buscar por nome, descrição ou categoria..."
+					value="{{ request.GET.search }}">
 
 			</form>
 		</div>
@@ -61,44 +70,50 @@
 			<thead class="thead-dark">
 				<tr>
 					<th scope="col">ID</th>
-					<th><a href="?search={{ request.GET.search }}&order_by=nome&direction={% if request.GET.direction == 'asc' %}desc{% else %}asc{% endif %}">Nome</a></th>
-					<th><a href="?search={{ request.GET.search }}&order_by=categoria&direction={% if request.GET.direction == 'asc' %}desc{% else %}asc{% endif %}">Descrição</a></th>
-					<th><a href="?search={{ request.GET.search }}&order_by=descricao&direction={% if request.GET.direction == 'asc' %}desc{% else %}asc{% endif %}">Categoria</a></th>
-					<th scope="col">Criada Em</th>
-					<th scope="col">Atualizada Em</th>
-					<th scope="col">Imagem</th>
+					<th><a
+							href="?search={{ request.GET.search }}&order_by=nome&direction={% if request.GET.direction == 'asc' %}desc{% else %}asc{% endif %}">Nome</a>
+					</th>
+					<th><a
+							href="?search={{ request.GET.search }}&order_by=categoria&direction={% if request.GET.direction == 'asc' %}desc{% else %}asc{% endif %}">Descrição</a>
+					</th>
+					<th><a
+							href="?search={{ request.GET.search }}&order_by=descricao&direction={% if request.GET.direction == 'asc' %}desc{% else %}asc{% endif %}">Categoria</a>
+					</th>
+					
+					<th scope="col">QR Code</th>
+					<th scope="col">Ação</th>
 				</tr>
 			</thead>
 			<tbody>
 				{% for cor in db %}
 				<tr data-id="{{ cor.id }}" class="cor-row">
 					<td>{{ cor.id}}</td>
-                    <td>{{ cor.nome}}</td>
+					<td>{{ cor.nome}}</td>
 					<td>{{ cor.descricao}}</td>
 					<td>{{ cor.categoria}}</td>
-					<td>{{ cor.created_at}}</td>
-					<td>{{ cor.updated_at}}</td>
-					<td>{{ cor.imagem}}</td>
+					
+					<td><a class="btn btn-primary" href="{% url 'gerar_qr_code' cor.id %}"><i class="fas fa-qrcode"></i> QRCode</a></td>
 					<td>
 						<a class="btn btn-danger" href="{% url 'core_cor_delete_confirm' cor.id%}"
-						onClick="return confirm('Tem certeza que deseja excluir este cor?') ">Deletar</a>
+							onClick="return confirm('Tem certeza que deseja excluir este cor?') ">Deletar</a>
 					</td>
 				</tr>
 				{% endfor %}
 
 			</tbody>
 		</table>
+		
 		<div class="pagination">
 			{% if db.has_previous %}
-				<a href="?page={{db.previous_page_number}}"> Previous </a>
+			<a href="?page={{db.previous_page_number}}"> Previous </a>
 			{% endif %}
-			
+
 			{{ db.number}}
-			
+
 			{% if db.has_next %}
-				<a href="?page={{db.next_page_number}}"> Next </a>
+			<a href="?page={{db.next_page_number}}"> Next </a>
 			{% endif %}
-		</div>
+		</div> 
 		
 		<div>
 		</div>
@@ -125,7 +140,7 @@
 							} else {
 								$('#id_imagem_preview').attr('src', '');  // Limpa o preview se não houver imagem
 							}
-							
+
 							$('#id_created_at').val(data.created_at);
 							$('#id_updated_at').val(data.updated_at);
 
@@ -134,6 +149,7 @@
 				});
 			});
 
-		</script>
-	</div>	
-{% endblock %}
+		</script>	
+		
+	</div>
+	{% endblock %}

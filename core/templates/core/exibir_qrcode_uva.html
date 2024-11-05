@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code</title>
+</head>
+<body>
+    <h2>QR Code</h2>
+    <img src="data:image/png;base64,{{ qr_code_base64 }}" alt="QR Code">
+    <br><br>
+    <a href="{% url 'core_listar_uvas' %}" class="btn btn-secondary">Voltar para a listagem</a>
+</body>
+<script>
+    setTimeout(function() {
+        window.location.href = "{% url 'core_listar_uvas' %}";
+    }, 5000); // Redireciona após 5 segundos
+</script>
+</html>
